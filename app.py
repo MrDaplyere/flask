@@ -31,4 +31,4 @@ def evento():
         ssl=True
     )
     
-    pusher_client.trigger("conexion", "evento", {"message": "hello world"})
+    pusher_client.trigger("conexion", "evento", {"txtTemperatura": 35, "txtHumedad": 0.6, "dpFechaHora": "2024-09-12 20:13:00"})

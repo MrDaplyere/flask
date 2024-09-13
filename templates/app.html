@@ -37,11 +37,16 @@
       cluster: 'us2'
     });
 
-var channel = pusher.subscribe("conexion");
+        // Canal -> Conexion
+        var channel = pusher.subscribe("conexion");
         // Evento: Acción de la aplicación
         channel.bind("evento", function (mensaje) {
-            alert("Ya ocurrió el evento en la aplicación")
-    });
+            // alert("Ya ocurrió el evento en la aplicación")
+            $("#tbodyLog").append(`<tr>
+                <td>${mensaje["txtTemperatura"]}</td>
+                <td>${mensaje["txtHumedad"]}</td>
+                <td>${mensaje["dpFechaHora"]}</td>
+            </tr>`)
   </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "<p>Hola, Mundo!</p>"
+    return render_template("app.html")
 
 @app.route("/alumnos")
 def alumnos():
@@ -15,7 +15,6 @@ def alumnos():
 
 @app.route("/alumnos/guardar", methods=["POST"])
 def alumnosGuardar():
-    matricula = request.form["txtMatriculaFA"];
-    nombreapellido = request.form["txtNombreApellidoFA"];
-    return f"Matricula: {matricula} Nombre y Apellido: {nombreapellido}"
-    
+    matricula      = request.form["txtMatriculaFA"]
+    nombreapellido = request.form["txtNombreApellidoFA"]
+    return f"Matrícula: {matricula} Nombre y Apellido: {nombreapellido}"

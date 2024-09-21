@@ -48,10 +48,10 @@
         buscar()
 
         var pusher = new Pusher('e6d3475eaa59a14fec17', {
-            cluster: 'us2'
-        });
-        
-        var channel = pusher.subscribe("conexion");
+            cluster: "us2"
+        })
+    
+        var channel = pusher.subscribe("conexion")
         channel.bind("evento", function (mensaje) {
             buscar()
         })

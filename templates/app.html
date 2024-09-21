@@ -17,9 +17,9 @@
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th>Temperatura</th>
-                    <th>Humedad</th>
-                    <th>Fecha y Hora</th>
+                    <th>Nombre Y Apellido</th>
+                    <th>Numero de telefono</th>
+                    <th>Fecha</th>
                 </tr>
             </thead>
             <tbody id="tbodyLog"></tbody>
@@ -47,24 +47,12 @@
 
         buscar()
 
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true
     var pusher = new Pusher('e6d3475eaa59a14fec17', {
       cluster: 'us2'
     });
 
-// Canal -> Conexion
         var channel = pusher.subscribe("conexion");
-        // Evento: Acción de la aplicación
         channel.bind("evento", function (mensaje) {
-            // alert("Ya ocurrió el evento en la aplicación")
-            /**
-            $("#tbodyLog").append(`<tr>
-                <td>${mensaje["temperatura"]}</td>
-                <td>${mensaje["humedad"]}</td>
-                <td>${mensaje["fechahora"]}</td>
-            </tr>`)
-            */
             buscar()
         })
     </script>

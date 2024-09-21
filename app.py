@@ -55,7 +55,7 @@ def registrar():
         con.reconnect()
     cursor = con.cursor()
     
-    sql = "INSERT INTO ts0_reservas (Nombre_Apellido, Telefono, Fecha) VALUES (%s, %s, %s)"
+    sql = "INSERT INTO tst0_reservas (Nombre_Apellido, Telefono, Fecha) VALUES (%s, %s, %s)"
     val = (args["na"], args["te"], datetime.datetime.now(pytz.timezone("America/Matamoros")))
     cursor.execute(sql, val)
 
@@ -70,7 +70,7 @@ def buscar():
     if not con.is_connected():
         con.reconnect()
     cursor = con.cursor()
-    cursor.execute("SELECT * FROM ts0_reservas ORDER BY Id_Reserva DESC")
+    cursor.execute("SELECT * FROM tst0_reservas ORDER BY Id_Reserva DESC")
     registros = cursor.fetchall()
 
     con.close()

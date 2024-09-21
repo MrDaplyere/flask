@@ -47,12 +47,12 @@
 
         buscar()
 
-        var pusher = new Pusher("34091ea15b1a362fb38d", {
-            cluster: "us2"
-        })
+        var pusher = new Pusher('e6d3475eaa59a14fec17', {
+          cluster: 'us2'
+        });
 
-        var channel = pusher.subscribe("registrosTiempoReal")
-        channel.bind("registroTiempoReal", function (mensaje) {
+        var channel = pusher.subscribe("conexion");
+        channel.bind("evento", function (mensaje) {
             buscar()
         })
     </script>

@@ -60,7 +60,7 @@ def registrar():
     con.commit()
     con.close()
  
-    pusher_client.trigger("registrosTiempoReal", "registroTiempoReal", args)
+    pusher_client.trigger("conexion", "evento", args)
     return args
 
 @app.route("/buscar")

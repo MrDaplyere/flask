@@ -14,109 +14,107 @@
 </head>
 <body>
     <div class="container">
-      <form id="frmRegistro" method="post">
-          <input type="hidden" id="id" name="id">
+        <form id="frmRegistro" method="post">
+            <input type="hidden" id="id" name="id">
 
-          <div class="mb-1">
-              <label for="nombre">Nombre y Apellido</label>
-              <input type="text" id="nombre" name="Nombre_Apellido" class="form-control">
-          </div>
-          <div class="mb-1">
-              <label for="telefono">Número de Teléfono</label>
-              <input type="text" id="telefono" name="Telefono" class="form-control">
-          </div>
-          <div class="mb-1">
-              <button id="guardar" name="guardar" class="btn btn-dark">Guardar</button>
-              <button type="reset" id="cancelar" name="cancelar" class="btn btn-link">Cancelar</button>
-          </div>
-      </form>
+            <div class="mb-1">
+                <label for="nombre">Nombre y Apellido</label>
+                <input type="text" id="nombre" name="Nombre_Apellido" class="form-control">
+            </div>
+            <div class="mb-1">
+                <label for="telefono">Número de Teléfono</label>
+                <input type="text" id="telefono" name="Telefono" class="form-control">
+            </div>
+            <div class="mb-1">
+                <button id="guardar" name="guardar" class="btn btn-dark">Guardar</button>
+                <button type="reset" id="cancelar" name="cancelar" class="btn btn-link">Cancelar</button>
+            </div>
+        </form>
 
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th>Nombre y Apellido</th>
-            <th>Número de Teléfono</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="tbodyRegistro"></tbody>
-      </table>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Nombre y Apellido</th>
+                    <th>Número de Teléfono</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tbodyRegistro"></tbody>
+        </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     <script>
-        window.addEventListener("load", function (event) {
+        window.addEventListener("load", function () {
             function buscar() {
                 $.get("/buscar", function (respuesta) {
-                    $("#tbodyRegistro").html("")
+                    $("#tbodyRegistro").html("");
+                    var fechaAnterior = "";
 
-                    var fechaAnterior = ""
+                    respuesta.forEach(function (registro) {
+                        var fecha = "";
+                        var fechaTemp = registro["Fecha"];
 
-                    for (var x in respuesta) {
-                        var registro = respuesta[x]
-
-                        var fecha = ""
-                        var fechaTemp = registro["Fecha"]
-
-                        if (fechaAnterior != fechaTemp) {
-                            fecha = fechaTemp
-                            fechaAnterior = fechaTemp
+                        if (fechaAnterior !== fechaTemp) {
+                            fecha = fechaTemp;
+                            fechaAnterior = fechaTemp;
                         }
 
-                        $("#tbodyRegistro").append(`<tr>
-                            <td>${registro["Nombre_Apellido"]}</td>
-                            <td>${registro["Telefono"]}</td>
-                            <td>${fecha}</td>
-                            <td>${registro["Hora"]}</td>
-                            <td>
-                                <button class="btn btn-primary btn-editar" data-id="${registro["Id_Reserva"]}">Editar</button>
-                            </td>
-                        </tr>`)
-                    }
-                })
+                        $("#tbodyRegistro").append(`
+                            <tr>
+                                <td>${registro["Nombre_Apellido"]}</td>
+                                <td>${registro["Telefono"]}</td>
+                                <td>${fecha}</td>
+                                <td>${registro["Hora"]}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-editar" data-id="${registro["Id_Reserva"]}">Editar</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                });
             }
 
-            buscar()
+            buscar();
 
-            $(document).on("click", ".btn-editar", function (event) {
-                var id = $(this).attr("data-id")
+            $(document).on("click", ".btn-editar", function () {
+                var id = $(this).attr("data-id");
 
-                $.get("/editar", {id: id}, function (respuesta) {
-                    var registro = respuesta[0]
+                $.get("/editar", { id: id }, function (respuesta) {
+                    var registro = respuesta[0];
 
-                    $("#id").val(registro["Id_Reserva"]).trigger("focus")
-                    $("#nombre").val(registro["Nombre_Apellido"])
-                    $("#telefono").val(registro["Telefono"])
-                })
-            })
+                    $("#id").val(registro["Id_Reserva"]).trigger("focus");
+                    $("#nombre").val(registro["Nombre_Apellido"]);
+                    $("#telefono").val(registro["Telefono"]);
+                });
+            });
             
             $("#frmRegistro").submit(function (event) {
-                event.preventDefault()
+                event.preventDefault();
 
-                $.post("/guardar", $(this).serialize(), function (respuesta) {
-                    $("#frmRegistro").get(0).reset()
-                    buscar()
-                })
-            })
-            .on("reset", function (event) {
-                $("#id").val("")
-            })
+                $.post("/guardar", $(this).serialize(), function () {
+                    $("#frmRegistro").get(0).reset();
+                    buscar();
+                });
+            }).on("reset", function () {
+                $("#id").val("");
+            });
 
-            Pusher.logToConsole = true
-            
+            Pusher.logToConsole = true;
+
             var pusher = new Pusher("e6d3475eaa59a14fec17", {
                 cluster: "us2"
-            })
+            });
 
             var channel = pusher.subscribe("canalRegistros");
 
-            channel.bind("registro", function (registro) {
-                buscar()
-            })
-        })
+            channel.bind("registro", function () {
+                buscar();
+            });
+        });
     </script>    
 </body>
 </html>

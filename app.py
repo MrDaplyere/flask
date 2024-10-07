@@ -30,7 +30,7 @@ def alumnos():
 @app.route("/alumnos/guardar", methods=["POST"])
 def alumnosGuardar():
     con.close()
-    matricula      = request.form["txtMatriculaFA"]
+    matricula = request.form["txtMatriculaFA"]
     nombreapellido = request.form["txtNombreApellidoFA"]
     return f"Matrícula {matricula} Nombre y Apellido {nombreapellido}"
 
@@ -41,7 +41,7 @@ def buscar():
 
     cursor = con.cursor(dictionary=True)
     cursor.execute("""
-    SELECT Id_Log, Nombre_Apellido, Numero_Telefono, DATE_FORMAT(Fecha_Hora, '%d/%m/%Y') AS Fecha FROM contactos_log
+    SELECT Id_Log, Nombre_Apellido, Numero_Telefono, DATE_FORMAT(Fecha_Hora, '%d/%m/%Y') AS Fecha, DATE_FORMAT(Fecha_Hora, '%H:%i:%s') AS Hora FROM contactos_log
     ORDER BY Id_Log DESC
     LIMIT 10 OFFSET 0
     """)
@@ -57,11 +57,11 @@ def editar():
 
     id = request.args["id"]
     cursor = con.cursor(dictionary=True)
-    sql    = """
+    sql = """
     SELECT Id_Log, Nombre_Apellido, Numero_Telefono FROM contactos_log
     WHERE Id_Log = %s
     """
-    val    = (id,)
+    val = (id,)
     cursor.execute(sql, val)
     registros = cursor.fetchall()
     con.close()
@@ -73,10 +73,10 @@ def guardar():
     if not con.is_connected():
         con.reconnect()
 
-    id             = request.form["id"]
+    id = request.form["id"]
     nombreapellido = request.form["nombreapellido"]
     numerotelefono = request.form["numerotelefono"]
-    fechahora      = datetime.datetime.now(pytz.timezone("America/Matamoros"))
+    fechahora = datetime.datetime.now(pytz.timezone("America/Matamoros"))
     
     cursor = con.cursor()
 
@@ -93,14 +93,14 @@ def guardar():
         INSERT INTO contactos_log (Nombre_Apellido, Numero_Telefono, Fecha_Hora)
                         VALUES (%s,              %s,              %s)
         """
-        val =                 (nombreapellido, numerotelefono, fechahora)
+        val = (nombreapellido, numerotelefono, fechahora)
     
     cursor.execute(sql, val)
     con.commit()
     con.close()
 
     pusher_client = pusher.Pusher(
-        app_id="1767930",  # Cambia esto a tu nueva app_id de Pusher
+        app_id="1767930",  # Tu nuevo app_id de Pusher
         key="e6d3475eaa59a14fec17",
         secret="c9dd4d864a7413ae936d",
         cluster="us2",

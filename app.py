@@ -8,9 +8,10 @@ import mysql.connector
 import datetime
 import pytz
 
+# Conexión a la base de datos
 con = mysql.connector.connect(
     host="185.232.14.52",
-    database="u760464709_tst_sep",
+    database="tst0_reservas",
     user="u760464709_tst_sep_usr",
     password="dJ0CIAFF="
 )
@@ -41,8 +42,9 @@ def buscar():
 
     cursor = con.cursor(dictionary=True)
     cursor.execute("""
-    SELECT Id_Log, Nombre_Apellido, Numero_Telefono, DATE_FORMAT(Fecha_Hora, '%d/%m/%Y') AS Fecha, DATE_FORMAT(Fecha_Hora, '%H:%i:%s') AS Hora FROM contactos_log
-    ORDER BY Id_Log DESC
+    SELECT Id_Reserva, Nombre_Apellido, Telefono, DATE_FORMAT(Fecha, '%d/%m/%Y') AS Fecha 
+    FROM tst0_reservas
+    ORDER BY Id_Reserva DESC
     LIMIT 10 OFFSET 0
     """)
     registros = cursor.fetchall()
@@ -58,8 +60,8 @@ def editar():
     id = request.args["id"]
     cursor = con.cursor(dictionary=True)
     sql = """
-    SELECT Id_Log, Nombre_Apellido, Numero_Telefono FROM contactos_log
-    WHERE Id_Log = %s
+    SELECT Id_Reserva, Nombre_Apellido, Telefono FROM tst0_reservas
+    WHERE Id_Reserva = %s
     """
     val = (id,)
     cursor.execute(sql, val)
@@ -75,32 +77,33 @@ def guardar():
 
     id = request.form["id"]
     nombreapellido = request.form["nombreapellido"]
-    numerotelefono = request.form["numerotelefono"]
-    fechahora = datetime.datetime.now(pytz.timezone("America/Matamoros"))
-    
+    telefono = request.form["telefono"]
+    fecha = datetime.datetime.now(pytz.timezone("America/Matamoros"))
+
     cursor = con.cursor()
 
     if id:
         sql = """
-        UPDATE contactos_log SET
+        UPDATE tst0_reservas SET
         Nombre_Apellido = %s,
-        Numero_Telefono = %s
-        WHERE Id_Log = %s
+        Telefono = %s
+        WHERE Id_Reserva = %s
         """
-        val = (nombreapellido, numerotelefono, id)
+        val = (nombreapellido, telefono, id)
     else:
         sql = """
-        INSERT INTO contactos_log (Nombre_Apellido, Numero_Telefono, Fecha_Hora)
-                        VALUES (%s,              %s,              %s)
+        INSERT INTO tst0_reservas (Nombre_Apellido, Telefono, Fecha)
+        VALUES (%s, %s, %s)
         """
-        val = (nombreapellido, numerotelefono, fechahora)
-    
+        val = (nombreapellido, telefono, fecha)
+
     cursor.execute(sql, val)
     con.commit()
     con.close()
 
+    # Configuración de Pusher
     pusher_client = pusher.Pusher(
-        app_id="1767930",  # Tu nuevo app_id de Pusher
+        app_id="1767930",  # Reemplaza con tu nueva app_id de Pusher
         key="e6d3475eaa59a14fec17",
         secret="c9dd4d864a7413ae936d",
         cluster="us2",

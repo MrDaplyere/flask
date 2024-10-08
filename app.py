@@ -75,7 +75,7 @@ def guardar():
         con.reconnect()
 
     id             = request.form["id"]
-    nombreapellido = request.form["nombreapellido"]
+    nombreapellido = request.form["nombre_apellido"]
     telefono       = request.form["telefono"]
     fechahora      = datetime.datetime.now(pytz.timezone("America/Matamoros"))
     

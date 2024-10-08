@@ -8,7 +8,7 @@ import mysql.connector
 import datetime
 import pytz
 
-# Conexión a la base de datos
+# Configuración de la conexión a la base de datos
 con = mysql.connector.connect(
     host="185.232.14.52",
     database="tst0_reservas",
@@ -31,7 +31,7 @@ def alumnos():
 @app.route("/alumnos/guardar", methods=["POST"])
 def alumnosGuardar():
     con.close()
-    matricula = request.form["txtMatriculaFA"]
+    matricula      = request.form["txtMatriculaFA"]
     nombreapellido = request.form["txtNombreApellidoFA"]
     return f"Matrícula {matricula} Nombre y Apellido {nombreapellido}"
 
@@ -59,11 +59,11 @@ def editar():
 
     id = request.args["id"]
     cursor = con.cursor(dictionary=True)
-    sql = """
+    sql    = """
     SELECT Id_Reserva, Nombre_Apellido, Telefono FROM tst0_reservas
     WHERE Id_Reserva = %s
     """
-    val = (id,)
+    val    = (id,)
     cursor.execute(sql, val)
     registros = cursor.fetchall()
     con.close()
@@ -75,11 +75,11 @@ def guardar():
     if not con.is_connected():
         con.reconnect()
 
-    id = request.form["id"]
+    id             = request.form["id"]
     nombreapellido = request.form["nombreapellido"]
-    telefono = request.form["telefono"]
-    fecha = datetime.datetime.now(pytz.timezone("America/Matamoros"))
-
+    telefono       = request.form["telefono"]
+    fechahora      = datetime.datetime.now(pytz.timezone("America/Matamoros"))
+    
     cursor = con.cursor()
 
     if id:
@@ -93,23 +93,24 @@ def guardar():
     else:
         sql = """
         INSERT INTO tst0_reservas (Nombre_Apellido, Telefono, Fecha)
-        VALUES (%s, %s, %s)
+                        VALUES (%s,              %s,      %s)
         """
-        val = (nombreapellido, telefono, fecha)
-
+        val =                 (nombreapellido, telefono, fechahora)
+    
     cursor.execute(sql, val)
     con.commit()
     con.close()
 
     # Configuración de Pusher
     pusher_client = pusher.Pusher(
-        app_id="1767930",  # Reemplaza con tu nueva app_id de Pusher
+        app_id="1767930",  
         key="e6d3475eaa59a14fec17",
         secret="c9dd4d864a7413ae936d",
         cluster="us2",
         ssl=True
     )
 
+    # Notificación usando Pusher
     pusher_client.trigger("canalRegistrosContactos", "registroContactos", {})
 
     return jsonify({})

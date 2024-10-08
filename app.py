@@ -8,10 +8,9 @@ import mysql.connector
 import datetime
 import pytz
 
-# Configuración de la conexión a la base de datos
 con = mysql.connector.connect(
     host="185.232.14.52",
-    database="tst0_reservas",
+    database="u760464709_tst_sep",
     user="u760464709_tst_sep_usr",
     password="dJ0CIAFF="
 )
@@ -101,16 +100,15 @@ def guardar():
     con.commit()
     con.close()
 
-    # Configuración de Pusher
+
     pusher_client = pusher.Pusher(
-        app_id="1767930",  
+        app_id="1767930",
         key="e6d3475eaa59a14fec17",
         secret="c9dd4d864a7413ae936d",
         cluster="us2",
         ssl=True
     )
 
-    # Notificación usando Pusher
     pusher_client.trigger("canalRegistrosContactos", "registroContactos", {})
 
     return jsonify({})

@@ -14,67 +14,113 @@
 </head>
 <body>
     <div class="container">
-        <form id="frmRegistro" method="post">
-            <input type="hidden" id="id" name="id">
+      <form id="frmReservas" method="post">
+          <input type="hidden" id="id" name="id">
 
-            <div class="mb-1">
-                <label for="nombre">Nombre y Apellido</label>
-                <input type="text" id="nombre" name="Nombre_Apellido" class="form-control">
-            </div>
-            <div class="mb-1">
-                <label for="telefono">Número de Teléfono</label>
-                <input type="text" id="telefono" name="Telefono" class="form-control">
-            </div>
-            <div class="mb-1">
-                <button id="guardar" name="guardar" class="btn btn-dark">Guardar</button>
-                <button type="reset" id="cancelar" name="cancelar" class="btn btn-link">Cancelar</button>
-            </div>
-        </form>
-
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th>Nombre y Apellido</th>
-                    <th>Número de Teléfono</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="tbodyRegistro"></tbody>
-        </table>
+          <div class="mb-1">
+              <label for="nombre_apellido">Nombre y Apellido</label>
+              <input type="text" id="nombre_apellido" name="nombre_apellido" class="form-control">
+          </div>
+          <div class="mb-1">
+              <label for="telefono">Teléfono</label>
+              <input type="text" id="telefono" name="telefono" class="form-control">
+          </div>
+          <div class="mb-1">
+              <label for="fecha">Fecha</label>
+              <input type="date" id="fecha" name="fecha" class="form-control">
+          </div>
+          <div class="mb-1">
+              <button id="guardar" name="guardar" class="btn btn-dark">Guardar</button>
+              <button type="reset" id="cancelar" name="cancelar" class="btn btn-link">Cancelar</button>
+          </div>
+      </form>
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Nombre y Apellido</th>
+            <th>Teléfono</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyReservas"></tbody>
+      </table>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <div class="app-float-button bg-body" style="z-index: 3; position: fixed; bottom: 5px; left: 5px; cursor: pointer;">
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item" data-bs-theme-value="light">
+                <i class="bi bi-sun-fill"></i>
+            </li>
+            <li class="list-group-item" data-bs-theme-value="dark">
+                <i class="bi bi-moon-stars-fill"></i>
+            </li>
+            <li class="list-group-item" data-bs-theme-value="auto">
+                <i class="bi bi-circle-half"></i>
+            </li>
+        </ul>
+    </div>
+    <script>
+        // Bootstrap theme toggler script (manteniendo el código existente)
+        var bootstrapTheme = localStorage.getItem("theme");
+        function getPreferredTheme() {
+            if (bootstrapTheme) {
+                return bootstrapTheme;
+            }
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        function setTheme(theme) {
+            if (theme === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                document.documentElement.setAttribute("data-bs-theme", "dark");
+            } else {
+                document.documentElement.setAttribute("data-bs-theme", theme === "auto" ? "light" : theme);
+            }
+        }
+
+        function showActiveTheme(theme) {
+            $("[data-bs-theme-value]").removeClass("bg-primary text-white active");
+            $(`[data-bs-theme-value="${theme}"]`).addClass("bg-primary text-white active");
+        }
+
+        $(document).on("click", '[data-bs-theme-value]', function () {
+            const theme = this.getAttribute("data-bs-theme-value");
+            localStorage.setItem("theme", theme);
+            setTheme(theme);
+            showActiveTheme(theme);
+        });
+
+        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+            if (!["light", "dark"].includes(bootstrapTheme)) {
+                setTheme(getPreferredTheme());
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            setTheme(bootstrapTheme);
+            showActiveTheme(getPreferredTheme());
+        });
+    </script>
 
     <script>
         window.addEventListener("load", function () {
             function buscar() {
                 $.get("/buscar", function (respuesta) {
-                    $("#tbodyRegistro").html("");
-                    var fechaAnterior = "";
-
-                    respuesta.forEach(function (registro) {
-                        var fecha = "";
-                        var fechaTemp = registro["Fecha"];
-
-                        if (fechaAnterior !== fechaTemp) {
-                            fecha = fechaTemp;
-                            fechaAnterior = fechaTemp;
-                        }
-
-                        $("#tbodyRegistro").append(`
-                            <tr>
-                                <td>${registro["Nombre_Apellido"]}</td>
-                                <td>${registro["Telefono"]}</td>
-                                <td>${fecha}</td>
-                                <td>${registro["Hora"]}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-editar" data-id="${registro["Id_Reserva"]}">Editar</button>
-                                </td>
-                            </tr>
-                        `);
-                    });
+                    $("#tbodyReservas").html("");
+                    for (var x in respuesta) {
+                        var reserva = respuesta[x];
+                        $("#tbodyReservas").append(`<tr>
+                            <td>${reserva["Nombre_Apellido"]}</td>
+                            <td>${reserva["Telefono"]}</td>
+                            <td>${reserva["Fecha"]}</td>
+                            <td>
+                                <button class="btn btn-primary btn-editar" data-id="${reserva["Id_Reserva"]}">Editar</button>
+                            </td>
+                        </tr>`);
+                    }
                 });
             }
 
@@ -82,36 +128,32 @@
 
             $(document).on("click", ".btn-editar", function () {
                 var id = $(this).attr("data-id");
-
-                $.get("/editar", { id: id }, function (respuesta) {
-                    var registro = respuesta[0];
-
-                    $("#id").val(registro["Id_Reserva"]).trigger("focus");
-                    $("#nombre").val(registro["Nombre_Apellido"]);
-                    $("#telefono").val(registro["Telefono"]);
+                $.get("/editar", {id: id}, function (respuesta) {
+                    var reserva = respuesta[0];
+                    $("#id").val(reserva["Id_Reserva"]).trigger("focus");
+                    $("#nombre_apellido").val(reserva["Nombre_Apellido"]);
+                    $("#telefono").val(reserva["Telefono"]);
+                    $("#fecha").val(reserva["Fecha"]);
                 });
             });
-            
-            $("#frmRegistro").submit(function (event) {
-                event.preventDefault();
 
+            $("#frmReservas").submit(function (event) {
+                event.preventDefault();
                 $.post("/guardar", $(this).serialize(), function () {
-                    $("#frmRegistro").get(0).reset();
-                    buscar();
+                    $("#frmReservas").get(0).reset();
                 });
             }).on("reset", function () {
                 $("#id").val("");
             });
 
             Pusher.logToConsole = true;
-
-            var pusher = new Pusher("e6d3475eaa59a14fec17", {
+            var pusher = new Pusher("1767930", {  
                 cluster: "us2"
             });
 
-            var channel = pusher.subscribe("canalRegistros");
+            var channel = pusher.subscribe("canalReservas");
 
-            channel.bind("registro", function () {
+            channel.bind("registroReserva", function (reserva) {
                 buscar();
             });
         });
